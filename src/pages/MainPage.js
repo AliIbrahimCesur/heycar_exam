@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React, { useState, useEffect, useCallback } from "react";
 import layer7 from "../../src/Assets/icons/Layer7.png";
 import layer3 from "../../src/Assets/icons/Layer3.png";
@@ -142,6 +143,7 @@ const MainPage = () => {
     } else {
       return <NoReport />;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clickedGenerate]);
 
   //get projects && gateway info from api

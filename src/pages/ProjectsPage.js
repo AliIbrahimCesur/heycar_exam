@@ -1,8 +1,11 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
+import { Doughnut, Pie } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ChartDataLabels);
 
 const ProjectsPage = (props) => {
   const [projects, setProjects] = useState(props.project);
@@ -100,6 +103,25 @@ const ProjectsPage = (props) => {
     };
   };
 
+  const option = {
+    tooltips: {
+      callbacks: {
+        label: function (tooltipItem, data) {
+          var dataset = data.datasets[tooltipItem.datasetIndex];
+          var meta = dataset._meta[Object.keys(dataset._meta)[0]];
+          var total = meta.total;
+          var currentValue = dataset.data[tooltipItem.index];
+          var percentage = parseFloat(
+            ((currentValue / total) * 100).toFixed(1)
+          );
+          return currentValue + " (" + percentage + "%)";
+        },
+        title: function (tooltipItem, data) {
+          return data.labels[tooltipItem[0].index];
+        },
+      },
+    },
+  };
   useEffect(() => {
     setFilterProjects((old_value) => [...old_value, props.filterProject]);
     setFilterGateway((old_value) => [...old_value, props.filterGateway]);
@@ -125,6 +147,7 @@ const ProjectsPage = (props) => {
       // cancel the subscription
       isApiSubscribed = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.filterProject, props.filterGateway, props.dateFrom, props.dateTo]);
 
   //fetch data from url by selections
@@ -442,7 +465,33 @@ const ProjectsPage = (props) => {
             </div>
             <div className="right-part-2">
               <div className="doughnut-box">
-                {<Doughnut data={createChartData(arr_data)} title={true} />}
+                {
+                  <Doughnut
+                    data={createChartData(arr_data)}
+                    title={true}
+                    options={{
+                      plugins: {
+                        datalabels: {
+                          color: "black",
+                          formatter: function (value, context) {
+                            let total = context.dataset.data.reduce(
+                              (a, b) => a + b,
+                              0
+                            );
+                            let title_ = (value / total) * 100;
+                            title_ = title_.toFixed().toString() + "%";
+                            if (value === 0) {
+                              value = 90;
+                              return "";
+                            } else {
+                              return title_;
+                            }
+                          },
+                        },
+                      },
+                    }}
+                  />
+                }
               </div>
             </div>
             <div className="right-part-3">
@@ -528,7 +577,31 @@ const ProjectsPage = (props) => {
             </div>
             <div className="right-part-2">
               <div className="doughnut-box">
-                <Doughnut data={createChartData(arr_data)} title={true} />
+                <Doughnut
+                  data={createChartData(arr_data)}
+                  title={true}
+                  options={{
+                    plugins: {
+                      datalabels: {
+                        color: "black",
+                        formatter: function (value, context) {
+                          let total = context.dataset.data.reduce(
+                            (a, b) => a + b,
+                            0
+                          );
+                          let title_ = (value / total) * 100;
+                          title_ = title_.toFixed().toString() + "%";
+                          if (value === 0) {
+                            value = 90;
+                            return "";
+                          } else {
+                            return title_;
+                          }
+                        },
+                      },
+                    },
+                  }}
+                />
               </div>
             </div>
             <div className="right-part-3">PROJECT TOTAL | 14,065 USD</div>
